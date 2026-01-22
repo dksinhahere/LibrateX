@@ -26,17 +26,6 @@ app.add_form({
     ]
 })
 
-function msg_show(output, _title_)
-{
-    app.add_alert({
-        context: "__ALERT__",
-        type: _title_,
-        title: "Success!",
-        message: output,
-        duration: 8000,
-        position: "center"
-    });
-}
 
 app.add_listener("__listen_run__", (e)=> {
     e.preventDefault();
@@ -49,13 +38,12 @@ app.add_listener("__listen_run__", (e)=> {
     switch(buf[0]) {
         case "echo" : {
             output = buf.slice(1, buf.length)
-            msg_show(output.join(" "), "success")
+            alert(output.join(" "))
             break
         }
 
         default: {
-            console.log("DEFAULT")
-            msg_show("command failed", "error")
+            alert("command failed")
             break
         }
     }

@@ -18,8 +18,7 @@ import { AddInput } from "./AddInput.js";
 import { AddButton } from "./AddButton.js";
 import { AddList } from "./AddList.js";
 import { AddLabel } from "./AddLabel.js";
-import {AddAlert} from "./AddAlert.js"
-
+import { AddAudio } from "./AddAudio.js";
 
 class App {
   constructor(initial) {
@@ -106,22 +105,11 @@ class App {
     this.append(element, props.container);
   }
 
-  add_alert(props) {
-    if (props.context !== "__ALERT__") {
-      throw new Error("add_alert expects context='__ALERT__'");
-    }
-
-    const element = React.createElement(
-      AddAlert,
-      {
-        ...props,
-        appInstance: this 
-      }
-    );
-
-    this.append(element, props.context);
+  add_media_audio(props){
+    const element = AddAudio(props, this);
+    this.append(element, props.container)
   }
-
+  
   add_form(props) {
     if (props.context !== "__FORM__") {
       throw new Error(`add_form expects context="__FORM__", got ${props.context}`);
