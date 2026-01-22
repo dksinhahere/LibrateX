@@ -63,27 +63,30 @@ function main()
         ]
     });
 
-    
-
     app.add_listener("__listen__submit__", (e) => {
         e.preventDefault();
         const fd = new FormData(e.target);
         console.log("FORM SUBMIT:", Object.fromEntries(fd.entries()));
-        alert(Object.fromEntries(fd.entries()))
+        alert(JSON.stringify(Object.fromEntries(fd.entries())));
+    });
+
+    // Add the missing URL listener
+    app.add_listener("__listen__url__", (e) => {
+        console.log("URL changed:", e.target.value);
     });
 
     app.add_form({
         context: "__FORM__",
         id: "login-form",
         button: "Submit",
-        style: "",
+        buttonStyle:"w-40 bg-blue-500 text-white",
+        style: "flex flex-col",
         onsubmit: "__listen__submit__",
-
-
         children: [{
             context: "__INPUT__",
             id: "username",
             label: "Username",
+            labelStyle: "bg-red-500 text-white block w-30",
             placeholder: "Enter username",
             style: "w-100 border-5 border-solid border-blue-800",
             type:"text",
@@ -92,10 +95,29 @@ function main()
             context:"__INPUT__",
             id:"password",
             label: "Password",
+            labelStyle: "bg-red-500 text-white block w-30",
             placeholder:"Enter Password",
             style:"w-100 border-5 border-solid border-blue-800",
             type:"password",
             onchange:"__listen__pass__"
+        },{
+            context: "__INPUT__",
+            id: "date",
+            label: "UserDate",
+            labelStyle: "bg-red-500 text-white block w-30",
+            style: "w-100 border-5 border-solid border-blue-800",
+            type: "date", 
+            onchange: "__listen__user__"
+        },{
+            context: "__INPUT__",
+            id: "website",
+            type: "url",
+            label: "Website URL",
+            labelStyle: "bg-red-500 text-white block w-30",
+            style: "w-100 border-5 border-solid border-blue-800",
+            placeholder: "https://example.com",
+            required: true,
+            onchange: "__listen__url__"
         }]
     });
 

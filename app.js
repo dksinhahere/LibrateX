@@ -60,6 +60,14 @@ function main()
             style:"w-100 border-5 border-solid border-blue-800",
             type:"password",
             onchange:"__listen__pass__"
+        },{
+            context:"__INPUT__",
+            id:"dob",
+            label: "Date Of Birth",
+            placeholder:"DOB",
+            style:"w-100 border-5 border-solid border-blue-800",
+            type:"date",
+            onchange:"__listen__pass__"
         }]
     });
 }

@@ -14,6 +14,11 @@ function loadTailwind() {
 import React from "https://esm.sh/react@18";
 import ReactDOM from "https://esm.sh/react-dom@18/client";
 import { AddForm } from "./AddForm.js";
+import { AddInput } from "./AddInput.js";
+import { AddButton } from "./AddButton.js";
+import { AddList } from "./AddList.js";
+import { AddLabel } from "./AddLabel.js";
+
 
 class App {
   constructor(initial) {
@@ -44,7 +49,7 @@ class App {
     const groupName = name ?? "__DEFAULT__";
 
     if (!this.elements.has(groupName)) {
-      // Pehla element => wrapper div banao
+      // First element => wrapper div banao
       const wrapper = React.createElement(
         "div",
         { key: groupName, "data-group": groupName },
@@ -55,11 +60,11 @@ class App {
       // Existing wrapper ko get karo
       const temp = this.elements.get(groupName);
 
-      // Purane children extract karo
+      // Old children extract karo
       const oldChildren = temp.props?.children ?? [];
       const childrenArr = Array.isArray(oldChildren) ? oldChildren : [oldChildren];
 
-      // Naya wrapper banao with appended child
+      // New wrapper banao with appended child
       const tmp = React.createElement(
         "div",
         { key: groupName, "data-group": groupName },
@@ -91,60 +96,12 @@ class App {
   }
 
   add_input(props) {
-    if (props.context !== "__INPUT__") {
-      throw new Error(`add_input expects context="__INPUT__", got ${props.context}`);
-    }
-
-    if (!props.id) {
-      throw new Error("add_input requires unique \`id\`");
-    }
-
-    const element = React.createElement(
-      "input",
-      {
-        id: props.id,
-        type: props.type,
-        placeholder: props.placeholder ?? "",
-        className: props.style,
-
-        onChange: (e) => {
-          if (typeof props.onchange === "string") {
-            this.call_listener(props.onchange, e);
-          }
-        }
-      }
-    );
-
+    const element = AddInput(props, this);
     this.append(element, props.container);
   }
 
   add_button(props) {
-    if (props.context !== "__BUTTON__") {
-      throw new Error(`add_button expects context="__BUTTON__", got ${props.context}`);
-    }
-
-    if (!props.text) {
-      throw new Error("add_button requires \`text\`");
-    }
-
-    const element = React.createElement(
-      "button",
-      {
-        id: props.id ?? undefined,
-        className: props.style ?? "",
-
-        onClick: (e) => {
-          if (typeof props.onclick === "string") {
-            this.call_listener(props.onclick, e);
-          }
-          if (typeof props.onclick === "function") {
-            props.onclick(e);
-          }
-        }
-      },
-      props.text
-    );
-
+    const element = AddButton(props, this);
     this.append(element, props.container);
   }
 
@@ -158,87 +115,15 @@ class App {
   }
 
   add_list(props) {
-    if (props.context !== "__LIST__") {
-      throw new Error(`add_list expects context="__LIST__", got ${props.context}`);
-    }
-
-    const listType = props.type === "ol" ? "ol" : "ul";
-
-    if (!Array.isArray(props.items)) {
-      throw new Error("add_list requires \`items\` array");
-    }
-
-    const listItems = props.items.map((item, index) => {
-      // string item
-      if (typeof item === "string") {
-        return React.createElement(
-          "li",
-          { key: index, className: props.itemStyle ?? "" },
-          item
-        );
-      }
-
-      // object item: {text, onclick}
-      if (item && typeof item === "object") {
-        return React.createElement(
-          "li",
-          {
-            key: index,
-            className: props.itemStyle ?? "",
-            onClick: (e) => {
-              if (typeof item.onclick === "string") this.call_listener(item.onclick, e);
-              if (typeof item.onclick === "function") item.onclick(e);
-            }
-          },
-          item.text ?? ""
-        );
-      }
-
-      return null;
-    });
-
-    const element = React.createElement(
-      listType,
-      { className: props.style ?? "" },
-      ...listItems
-    );
-
+    const element = AddList(props, this);
     this.append(element, props.container);
   }
 
   add_label(props) {
-    let decision = props.context;
-    switch (decision) {
-      case "__H__": {
-        let kind = props.value;
-        let header = `h${kind}`;
-
-        if (!(kind >= 1 && kind <= 6)) {
-          throw new Error("Heading must be between 1 and 6");
-        }
-        let element = React.createElement(
-          header,
-          { className: props.style ?? "" },
-          props.content
-        );
-        this.append(element, props.container);
-        break;
-      }
-      case "__P__": {
-        if (props.value !== null) {
-          throw new Error("__P__ requires null as value");
-        }
-        const element = React.createElement(
-          "p",
-          { className: props.style ?? "" },
-          props.content
-        );
-
-        this.append(element, props.container);
-        break;
-      }
-    }
+    const element = AddLabel(props);
+    this.append(element, props.container);
   }
+
 }
 
 export { App };
