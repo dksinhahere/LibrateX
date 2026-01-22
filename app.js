@@ -1,51 +1,16 @@
-// demo
 import { App } from "./src/index.js"
 
 function main()
 {
-    let app = new App({id: "app", style:"bg-yellow-700 text-white", title:"First Header"})
-    app.add_label(
-        {
-            context: "__H__",
-            value: 3,
-            style: "bg-red-500 text-3xl",
-            content: "Hello, checkout PolarBear"
-        }
-    )
+    let app = new App({id:"app", title:"", style:"flex flex-row", container:"group1"})
 
-    app.add_label(
-        {
-            context:"__P__",
-            value:null,
-            style: "bg-blue-600 text-white",
-            content: "Ok polar"
-        }
-    )
-
-    app.add_listener("__listen__change__", (e) => {
-        console.log("Username changed:", e.target.value);
-    });
-
-    app.add_listener("__listen__click__", () => {
-        alert("Button clicked!");
-    });
-
-    app.add_input({
-        context: "__INPUT__",
-        id: "username",
-        label: "Username",
-        placeholder: "Enter username",
-        style: "w-100",
-        type:"text",
-        onchange: "__listen__change__"
+    app.add_label({
+        context: "__H__",
+        value: 1,
+        style:"text-4xl flex flex-row font-bold bg-gradient-to-r from-blue-800 to-gray-800 py-2 pl-2 text-white",
+        content: "TextUtils",
+        container: "group1"
     })
-    
-    app.add_button({
-        context: "__BUTTON__",
-        text: "Submit",
-        style: "mt-4 px-6 py-2 bg-blue-600 text-white rounded",
-        onclick: "__listen__click__"
-    });
 
     app.add_listener("__listen__home__", () => console.log("Home clicked"));
     app.add_listener("__listen__about__", () => console.log("About clicked"));
@@ -53,17 +18,16 @@ function main()
 
     app.add_list({
         context: "__LIST__",
-        type: "ul",
-        style: "list-disc pl-6",
-        itemStyle: "cursor-pointer text-lg",
+        type:"ul",
+        style:"flex gap-5 relative top-0 left-0 border-5 w-60 py-2 px-2 border-blue-800 bg-gray-800 text-white",
+        itemStyle: "cursor-pointer",
         items: [
             { text: "Home", onclick: "__listen__home__" },
             { text: "About", onclick: "__listen__about__" },
             { text: "Contact", onclick: "__listen__contact__" }
-        ]
-    });
-
-    
+        ],
+        container: "group2"
+    })
 
     app.add_listener("__listen__submit__", (e) => {
         e.preventDefault();
@@ -75,7 +39,7 @@ function main()
         context: "__FORM__",
         id: "login-form",
         button: "Submit",
-        style: "",
+        style: "flex flex-col relative justify-center items-center",
         onsubmit: "__listen__submit__",
 
 
@@ -97,8 +61,6 @@ function main()
             onchange:"__listen__pass__"
         }]
     });
-
 }
-
 
 main()

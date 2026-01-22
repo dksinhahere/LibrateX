@@ -13,42 +13,75 @@ function loadTailwind() {
 
 import React from "https://esm.sh/react@18";
 import ReactDOM from "https://esm.sh/react-dom@18/client";
+import { AddForm } from "./AddForm.js";
 
 class App {
   constructor(initial) {
-
-    this.elements = []
+    this.elements = new Map();
     this.listeners = {};
 
-    loadTailwind()
+    loadTailwind();
     const el = document.getElementById(initial.id);
     if (!el) throw new Error(`Missing root: #${initial.id}`);
 
     this.root = ReactDOM.createRoot(el);
-    let element = React.createElement(
+
+    // Agar initial title hai toh usko bhi container ke saath group karo
+    if (initial.title) {
+      let element = React.createElement(
         "h1",
-        {className: "text-4xl font-bold text-black-600"},
+        { className: initial.style },
         initial.title
-    )
-    
-    this.append(element)
+      );
+      this.append(element, initial.container);
+    } else {
+      // Agar title nahi hai toh bas empty render karo
+      this.render();
+    }
   }
 
-  append(element) {
-    this.elements.push(element)
-    this.render()
+  append(_element_, name = "__DEFAULT__") {
+    const groupName = name ?? "__DEFAULT__";
+
+    if (!this.elements.has(groupName)) {
+      // Pehla element => wrapper div banao
+      const wrapper = React.createElement(
+        "div",
+        { key: groupName, "data-group": groupName },
+        _element_
+      );
+      this.elements.set(groupName, wrapper);
+    } else {
+      // Existing wrapper ko get karo
+      const temp = this.elements.get(groupName);
+
+      // Purane children extract karo
+      const oldChildren = temp.props?.children ?? [];
+      const childrenArr = Array.isArray(oldChildren) ? oldChildren : [oldChildren];
+
+      // Naya wrapper banao with appended child
+      const tmp = React.createElement(
+        "div",
+        { key: groupName, "data-group": groupName },
+        ...childrenArr,
+        _element_
+      );
+
+      this.elements.set(groupName, tmp);
+    }
+
+    this.render();
   }
 
   render() {
+    const groups = Array.from(this.elements.values());
     this.root.render(
-        React.createElement("div",
-        {},
-        ...this.elements)
-    )
+      React.createElement("div", {}, ...groups)
+    );
   }
 
   add_listener(name, fn) {
-    this.listeners[name] = fn 
+    this.listeners[name] = fn;
   }
 
   call_listener(name, event) {
@@ -58,12 +91,12 @@ class App {
   }
 
   add_input(props) {
-    if(props.context !== "__INPUT__") {
+    if (props.context !== "__INPUT__") {
       throw new Error(`add_input expects context="__INPUT__", got ${props.context}`);
     }
 
     if (!props.id) {
-      throw new Error("add_input requires unique `id`");
+      throw new Error("add_input requires unique \`id\`");
     }
 
     const element = React.createElement(
@@ -72,7 +105,7 @@ class App {
         id: props.id,
         type: props.type,
         placeholder: props.placeholder ?? "",
-        className:props.style,
+        className: props.style,
 
         onChange: (e) => {
           if (typeof props.onchange === "string") {
@@ -80,10 +113,9 @@ class App {
           }
         }
       }
-    )
+    );
 
-    
-    this.append(element)
+    this.append(element, props.container);
   }
 
   add_button(props) {
@@ -92,7 +124,7 @@ class App {
     }
 
     if (!props.text) {
-      throw new Error("add_button requires `text`");
+      throw new Error("add_button requires \`text\`");
     }
 
     const element = React.createElement(
@@ -113,7 +145,16 @@ class App {
       props.text
     );
 
-    this.append(element);
+    this.append(element, props.container);
+  }
+
+  add_form(props) {
+    if (props.context !== "__FORM__") {
+      throw new Error(`add_form expects context="__FORM__", got ${props.context}`);
+    }
+
+    const formElement = AddForm(props, this);
+    this.append(formElement, props.container);
   }
 
   add_list(props) {
@@ -124,7 +165,7 @@ class App {
     const listType = props.type === "ol" ? "ol" : "ul";
 
     if (!Array.isArray(props.items)) {
-      throw new Error("add_list requires `items` array");
+      throw new Error("add_list requires \`items\` array");
     }
 
     const listItems = props.items.map((item, index) => {
@@ -162,41 +203,40 @@ class App {
       ...listItems
     );
 
-    this.append(element);
+    this.append(element, props.container);
   }
 
   add_label(props) {
     let decision = props.context;
-    switch(decision)
-    {
-        case "__H__": {
-            let kind = props.value
-            let header = `h${kind}`
-            
-            if (!(kind >= 1 && kind <= 6)) {
-                throw console.error("Heading must be greater then or equal 1 >= and less than or equal 6 <=")
-            }
-            let element = React.createElement(
-                header,
-                { className: props.style ?? "" },
-                props.content
-            )
-            this.append(element)
-            break
-        }
-        case "__P__": {
-            if(props.value !== null) {
-                throw console.error("__P__ require null as value, but got something useful! set value to null")
-            }
-            const element = React.createElement(
-                "p",
-                { className: props.style ?? "" },
-                props.content
-            );
+    switch (decision) {
+      case "__H__": {
+        let kind = props.value;
+        let header = `h${kind}`;
 
-            this.append(element);
-            break
+        if (!(kind >= 1 && kind <= 6)) {
+          throw new Error("Heading must be between 1 and 6");
         }
+        let element = React.createElement(
+          header,
+          { className: props.style ?? "" },
+          props.content
+        );
+        this.append(element, props.container);
+        break;
+      }
+      case "__P__": {
+        if (props.value !== null) {
+          throw new Error("__P__ requires null as value");
+        }
+        const element = React.createElement(
+          "p",
+          { className: props.style ?? "" },
+          props.content
+        );
+
+        this.append(element, props.container);
+        break;
+      }
     }
   }
 }
