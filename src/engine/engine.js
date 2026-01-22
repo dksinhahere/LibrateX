@@ -18,6 +18,7 @@ import { AddInput } from "./AddInput.js";
 import { AddButton } from "./AddButton.js";
 import { AddList } from "./AddList.js";
 import { AddLabel } from "./AddLabel.js";
+import {AddAlert} from "./AddAlert.js"
 
 
 class App {
@@ -103,6 +104,22 @@ class App {
   add_button(props) {
     const element = AddButton(props, this);
     this.append(element, props.container);
+  }
+
+  add_alert(props) {
+    if (props.context !== "__ALERT__") {
+      throw new Error("add_alert expects context='__ALERT__'");
+    }
+
+    const element = React.createElement(
+      AddAlert,
+      {
+        ...props,
+        appInstance: this 
+      }
+    );
+
+    this.append(element, props.context);
   }
 
   add_form(props) {

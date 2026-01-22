@@ -121,6 +121,14 @@ function main()
         }]
     });
 
+    app.add_alert({
+        context: "__ALERT__",
+        type: "success",
+        title: "Success!",
+        message: "Your changes have been saved.",
+        duration: 3000,
+        position: "center"
+    });
 }
 
 
