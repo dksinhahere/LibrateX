@@ -39,6 +39,7 @@ function main()
         context: "__FORM__",
         id: "login-form",
         button: "Submit",
+        buttonStyle: "mt-4 px-6 py-2 bg-red-600 text-white rounded hover:bg-blue-700",
         style: "flex flex-col relative justify-center items-center",
         onsubmit: "__listen__submit__",
 

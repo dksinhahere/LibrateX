@@ -69,6 +69,7 @@ function main()
         e.preventDefault();
         const fd = new FormData(e.target);
         console.log("FORM SUBMIT:", Object.fromEntries(fd.entries()));
+        alert(Object.fromEntries(fd.entries()))
     });
 
     app.add_form({
